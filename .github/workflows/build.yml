@@ -13,6 +13,10 @@ jobs:
     name: Build MeetsRecord.app
     runs-on: macos-15
 
+    env:
+      HAS_SIGNING_CERT: ${{ secrets.BUILD_CERTIFICATE_BASE64 != '' }}
+      HAS_NOTARIZATION: ${{ secrets.APPLE_ID != '' }}
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,7 +40,7 @@ jobs:
       # Code signing with Developer ID (skipped if secrets not set)
       # ---------------------------------------------------------------
       - name: Import signing certificate
-        if: ${{ secrets.BUILD_CERTIFICATE_BASE64 != '' }}
+        if: env.HAS_SIGNING_CERT == 'true'
         env:
           BUILD_CERTIFICATE_BASE64: ${{ secrets.BUILD_CERTIFICATE_BASE64 }}
           P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
@@ -59,7 +63,6 @@ jobs:
           security list-keychain -d user -s "$KEYCHAIN_PATH"
 
           echo "KEYCHAIN_PATH=$KEYCHAIN_PATH" >> $GITHUB_ENV
-          echo "SIGNING_READY=true" >> $GITHUB_ENV
 
       - name: Assemble .app bundle
         env:
@@ -78,7 +81,7 @@ jobs:
       # Notarize the .dmg (skipped if Apple credentials not set)
       # ---------------------------------------------------------------
       - name: Notarize .dmg
-        if: ${{ secrets.APPLE_ID != '' }}
+        if: env.HAS_NOTARIZATION == 'true'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
@@ -97,17 +100,14 @@ jobs:
           echo "✅ Notarization complete"
 
       - name: Verify notarization
-        if: ${{ secrets.APPLE_ID != '' }}
-        env:
-          APPLE_ID: ${{ secrets.APPLE_ID }}
-        run: |
-          xcrun stapler validate build/MeetsRecord.dmg
+        if: env.HAS_NOTARIZATION == 'true'
+        run: xcrun stapler validate build/MeetsRecord.dmg
 
       # ---------------------------------------------------------------
       # Clean up keychain
       # ---------------------------------------------------------------
       - name: Clean up keychain
-        if: ${{ always() && env.SIGNING_READY == 'true' }}
+        if: always() && env.HAS_SIGNING_CERT == 'true'
         run: security delete-keychain "$KEYCHAIN_PATH" || true
 
       - name: Upload .app artifact
