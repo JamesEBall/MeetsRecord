@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct MeetingRecorderApp: App {
+struct MeetsRecordApp: App {
     @StateObject private var recordingState = RecordingState()
     @StateObject private var sessionManager = SessionManager()
 
@@ -12,7 +12,7 @@ struct MeetingRecorderApp: App {
                 .environmentObject(sessionManager)
         } label: {
             Label {
-                Text("Meeting Recorder")
+                Text("MeetsRecord")
             } icon: {
                 Image(systemName: menuBarIcon)
             }

@@ -7,7 +7,7 @@ import os
 class AudioFileWriter {
     private var audioFile: AVAudioFile?
     private let outputURL: URL
-    private let logger = Logger(subsystem: "MeetingRecorder", category: "AudioFileWriter")
+    private let logger = Logger(subsystem: "MeetsRecord", category: "AudioFileWriter")
 
     init(outputURL: URL, format: AVAudioFormat) throws {
         self.outputURL = outputURL

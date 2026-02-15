@@ -27,9 +27,9 @@ class AudioRecorder: NSObject, ObservableObject {
     private var audioFileWriter: AudioFileWriter?
     private var audioMixer: AudioMixer?
 
-    private let systemAudioQueue = DispatchQueue(label: "com.meetingrecorder.systemaudio", qos: .userInitiated)
-    private let micAudioQueue = DispatchQueue(label: "com.meetingrecorder.micaudio", qos: .userInitiated)
-    private let logger = Logger(subsystem: "MeetingRecorder", category: "AudioRecorder")
+    private let systemAudioQueue = DispatchQueue(label: "com.meetsrecord.systemaudio", qos: .userInitiated)
+    private let micAudioQueue = DispatchQueue(label: "com.meetsrecord.micaudio", qos: .userInitiated)
+    private let logger = Logger(subsystem: "MeetsRecord", category: "AudioRecorder")
 
     var onError: ((Error) -> Void)?
 

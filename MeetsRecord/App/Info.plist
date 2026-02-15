@@ -5,13 +5,13 @@
 	<key>LSUIElement</key>
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
-	<string>MeetingRecorder needs microphone access to record your voice during meetings.</string>
+	<string>MeetsRecord needs microphone access to record your voice during meetings.</string>
 	<key>CFBundleName</key>
-	<string>MeetingRecorder</string>
+	<string>MeetsRecord</string>
 	<key>CFBundleDisplayName</key>
-	<string>Meeting Recorder</string>
+	<string>MeetsRecord</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.meetingrecorder.app</string>
+	<string>com.meetsrecord.app</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>CFBundleShortVersionString</key>
@@ -19,6 +19,6 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleExecutable</key>
-	<string>MeetingRecorder</string>
+	<string>MeetsRecord</string>
 </dict>
 </plist>

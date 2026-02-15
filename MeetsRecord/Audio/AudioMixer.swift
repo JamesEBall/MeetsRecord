@@ -10,7 +10,7 @@ final class AudioMixer: @unchecked Sendable {
     private let outputFormat: AVAudioFormat
     private let writer: AudioFileWriter
     private let lock = NSLock()
-    private let logger = Logger(subsystem: "MeetingRecorder", category: "AudioMixer")
+    private let logger = Logger(subsystem: "MeetsRecord", category: "AudioMixer")
 
     var isPaused = false
 

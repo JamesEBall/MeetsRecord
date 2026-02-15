@@ -39,7 +39,7 @@ struct RecordingView: View {
             Image(systemName: "waveform.circle.fill")
                 .font(.title2)
                 .foregroundColor(state.isRecording ? .red : .accentColor)
-            Text("Meeting Recorder")
+            Text("MeetsRecord")
                 .font(.headline)
             Spacer()
             if state.isRecording {
@@ -183,7 +183,7 @@ struct RecordingView: View {
 
             Divider()
 
-            Button("Quit Meeting Recorder") {
+            Button("Quit MeetsRecord") {
                 NSApplication.shared.terminate(nil)
             }
         }

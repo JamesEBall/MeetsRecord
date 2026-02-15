@@ -1,4 +1,4 @@
-# Meeting Recorder
+# MeetsRecord
 
 A macOS menu bar app that records meeting audio (system output + microphone), autosaves in real time, and transcribes locally using Whisper.
 
@@ -23,23 +23,23 @@ A macOS menu bar app that records meeting audio (system output + microphone), au
 ### 1. Clone and open
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/MeetingRecorder.git
-cd MeetingRecorder
+git clone https://github.com/JamesEBall/MeetsRecord.git
+cd MeetsRecord
 open Package.swift  # Opens in Xcode
 ```
 
 ### 2. Download Whisper model
 
-Download the `ggml-base.en.bin` model (~142 MB) and place it in `MeetingRecorder/Resources/`:
+Download the `ggml-base.en.bin` model (~142 MB) and place it in `MeetsRecord/Resources/`:
 
 ```bash
-curl -L -o MeetingRecorder/Resources/ggml-base.en.bin \
+curl -L -o MeetsRecord/Resources/ggml-base.en.bin \
   https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin
 ```
 
 ### 3. Build and run
 
-Open in Xcode, select the `MeetingRecorder` scheme, and run. The app appears in the menu bar.
+Open in Xcode, select the `MeetsRecord` scheme, and run. The app appears in the menu bar.
 
 On first run, macOS will prompt for:
 - **Screen Recording** permission (needed to capture system audio)
@@ -56,10 +56,10 @@ On first run, macOS will prompt for:
 
 ### Output
 
-Recordings are saved to `~/Documents/MeetingRecorder/`:
+Recordings are saved to `~/Documents/MeetsRecord/`:
 
 ```
-~/Documents/MeetingRecorder/
+~/Documents/MeetsRecord/
   2026-02-15_14-30-00/
     recording.caf      # Audio file (playable in QuickTime, VLC, etc.)
     transcript.txt      # Timestamped transcript
@@ -79,11 +79,11 @@ Recordings are saved to `~/Documents/MeetingRecorder/`:
 ## Project Structure
 
 ```
-MeetingRecorder/
+MeetsRecord/
   App/
-    MeetingRecorderApp.swift     — @main entry point
+    MeetsRecordApp.swift         — @main entry point
     Info.plist                   — LSUIElement, privacy descriptions
-    MeetingRecorder.entitlements — Sandbox + audio permissions
+    MeetsRecord.entitlements     — Sandbox + audio permissions
   Views/
     RecordingView.swift          — Menu bar dropdown UI
   Audio/

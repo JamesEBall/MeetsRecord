@@ -3,7 +3,7 @@ import os
 
 /// Converts audio files to 16kHz mono Float32 format required by Whisper.
 struct AudioConverter {
-    private static let logger = Logger(subsystem: "MeetingRecorder", category: "AudioConverter")
+    private static let logger = Logger(subsystem: "MeetsRecord", category: "AudioConverter")
 
     /// Reads a CAF/WAV file and returns 16kHz mono Float32 samples.
     static func convertTo16kHzMono(fileURL: URL) throws -> [Float] {

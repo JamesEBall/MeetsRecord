@@ -10,13 +10,13 @@ class SessionManager: ObservableObject {
 
     private let audioRecorder = AudioRecorder()
     private let transcriptionService = TranscriptionService()
-    private let logger = Logger(subsystem: "MeetingRecorder", category: "SessionManager")
+    private let logger = Logger(subsystem: "MeetsRecord", category: "SessionManager")
 
     let recordingsDirectory: URL
 
     init() {
         let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
-        recordingsDirectory = docs.appendingPathComponent("MeetingRecorder")
+        recordingsDirectory = docs.appendingPathComponent("MeetsRecord")
 
         try? FileManager.default.createDirectory(
             at: recordingsDirectory,

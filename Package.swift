@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "MeetingRecorder",
+    name: "MeetsRecord",
     platforms: [
         .macOS(.v15)
     ],
@@ -11,12 +11,12 @@ let package = Package(
     ],
     targets: [
         .executableTarget(
-            name: "MeetingRecorder",
+            name: "MeetsRecord",
             dependencies: ["SwiftWhisper"],
-            path: "MeetingRecorder",
+            path: "MeetsRecord",
             exclude: [
                 "App/Info.plist",
-                "App/MeetingRecorder.entitlements"
+                "App/MeetsRecord.entitlements"
             ],
             resources: [
                 .copy("Resources/ggml-base.en.bin")

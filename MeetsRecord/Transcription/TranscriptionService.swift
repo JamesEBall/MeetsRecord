@@ -5,7 +5,7 @@ import os
 /// Transcribes audio files locally using SwiftWhisper (whisper.cpp).
 @MainActor
 class TranscriptionService {
-    private let logger = Logger(subsystem: "MeetingRecorder", category: "TranscriptionService")
+    private let logger = Logger(subsystem: "MeetsRecord", category: "TranscriptionService")
 
     /// Returns the URL to the bundled Whisper model, or nil if not found.
     private var modelURL: URL? {
