@@ -17,9 +17,11 @@ RESOURCES_DIR="$PROJECT_DIR/MeetsRecord/Resources"
 
 # Parse flags
 INSTALL=false
+SIGN_IDENTITY="-"  # ad-hoc by default
 for arg in "$@"; do
     case $arg in
         --install) INSTALL=true ;;
+        --sign=*) SIGN_IDENTITY="${arg#*=}" ;;
     esac
 done
 
@@ -111,12 +113,21 @@ echo "✅ App bundle assembled"
 echo ""
 
 # ---------------------------------------------------------------------------
-# 5. Code sign (ad-hoc for local use)
+# 5. Code sign
 # ---------------------------------------------------------------------------
-echo "🔏 Code signing (ad-hoc)..."
-codesign --deep --force --sign - \
-    --entitlements "$PROJECT_DIR/MeetsRecord/App/MeetsRecord.entitlements" \
-    "$APP_BUNDLE" 2>&1
+if [ "$SIGN_IDENTITY" = "-" ]; then
+    echo "🔏 Code signing (ad-hoc)..."
+    codesign --deep --force --sign - \
+        --entitlements "$PROJECT_DIR/MeetsRecord/App/MeetsRecord.entitlements" \
+        "$APP_BUNDLE" 2>&1
+else
+    echo "🔏 Code signing with Developer ID: $SIGN_IDENTITY..."
+    codesign --deep --force --sign "$SIGN_IDENTITY" \
+        --options runtime \
+        --entitlements "$PROJECT_DIR/MeetsRecord/App/MeetsRecord.entitlements" \
+        --timestamp \
+        "$APP_BUNDLE" 2>&1
+fi
 echo "✅ Code signed"
 echo ""
 

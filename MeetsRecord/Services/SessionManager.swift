@@ -36,21 +36,15 @@ class SessionManager: ObservableObject {
     // MARK: - Recording Controls
 
     func startRecording(state: RecordingState) async {
-        // Check permissions
-        do {
-            if state.recordSystemAudio {
-                try await PermissionManager.ensureScreenRecordingPermission()
+        // Check microphone permission before starting (screen recording
+        // permission is checked once inside AudioRecorder.startRecording
+        // when it calls SCShareableContent — no need to double-prompt).
+        if state.recordMicrophone {
+            let micGranted = await PermissionManager.ensureMicrophonePermission()
+            if !micGranted {
+                state.status = .error("Microphone permission denied")
+                return
             }
-            if state.recordMicrophone {
-                let micGranted = await PermissionManager.ensureMicrophonePermission()
-                if !micGranted {
-                    state.status = .error("Microphone permission denied")
-                    return
-                }
-            }
-        } catch {
-            state.status = .error("Screen Recording permission required. Please enable in System Settings.")
-            return
         }
 
         let session = RecordingSession(baseDirectory: recordingsDirectory)
@@ -65,6 +59,11 @@ class SessionManager: ObservableObject {
                 captureMicrophone: state.recordMicrophone
             )
             logger.info("Recording started: \(session.directoryURL.lastPathComponent)")
+        } catch RecorderError.permissionDenied {
+            state.status = .error("Screen Recording permission required. Please enable in System Settings.")
+            state.stopTimer()
+            state.currentSession = nil
+            logger.error("Screen recording permission denied")
         } catch {
             state.status = .error("Failed to start: \(error.localizedDescription)")
             state.stopTimer()
