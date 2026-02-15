@@ -15,11 +15,34 @@ MODEL_NAME="ggml-base.en"
 MODEL_FILE="$MODEL_NAME.bin"
 RESOURCES_DIR="$PROJECT_DIR/MeetsRecord/Resources"
 
+# Parse flags
+INSTALL=false
+for arg in "$@"; do
+    case $arg in
+        --install) INSTALL=true ;;
+    esac
+done
+
 echo "🎙️  Building $APP_NAME..."
 echo ""
 
 # ---------------------------------------------------------------------------
-# 1. Download Whisper model if not present
+# 1. Generate icons if not present
+# ---------------------------------------------------------------------------
+if [ ! -f "$RESOURCES_DIR/AppIcon.icns" ]; then
+    echo "🎨 Generating app icon..."
+    if command -v python3 &>/dev/null && python3 -c "from PIL import Image" 2>/dev/null; then
+        python3 "$PROJECT_DIR/scripts/generate-icons.py"
+    else
+        echo "  ⚠️  Pillow not installed (pip3 install Pillow), skipping icon generation"
+    fi
+else
+    echo "✅ App icon already present"
+fi
+echo ""
+
+# ---------------------------------------------------------------------------
+# 2. Download Whisper model if not present
 # ---------------------------------------------------------------------------
 if [ ! -f "$RESOURCES_DIR/$MODEL_FILE" ] || [ "$(wc -c < "$RESOURCES_DIR/$MODEL_FILE")" -lt 1000 ]; then
     echo "📥 Downloading Whisper model ($MODEL_FILE, ~142 MB)..."
@@ -34,7 +57,7 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 2. Build with SPM (release mode for performance)
+# 3. Build with SPM (release mode for performance)
 # ---------------------------------------------------------------------------
 if [ -f "$BUILD_DIR/$APP_NAME" ]; then
     echo "✅ Release binary already exists, skipping build"
@@ -47,7 +70,7 @@ fi
 echo ""
 
 # ---------------------------------------------------------------------------
-# 3. Assemble .app bundle
+# 4. Assemble .app bundle
 # ---------------------------------------------------------------------------
 echo "📦 Assembling $APP_NAME.app..."
 
@@ -64,6 +87,12 @@ chmod +x "$APP_BUNDLE/Contents/MacOS/$APP_NAME"
 
 # Copy Info.plist
 cp "$PROJECT_DIR/MeetsRecord/App/Info.plist" "$APP_BUNDLE/Contents/Info.plist"
+
+# Copy app icon
+if [ -f "$RESOURCES_DIR/AppIcon.icns" ]; then
+    cp "$RESOURCES_DIR/AppIcon.icns" "$APP_BUNDLE/Contents/Resources/AppIcon.icns"
+    echo "  ↳ Embedded app icon"
+fi
 
 # Copy resource bundle (SPM creates this with the whisper model inside)
 RESOURCE_BUNDLE="$BUILD_DIR/${APP_NAME}_${APP_NAME}.bundle"
@@ -82,7 +111,7 @@ echo "✅ App bundle assembled"
 echo ""
 
 # ---------------------------------------------------------------------------
-# 4. Code sign (ad-hoc for local use)
+# 5. Code sign (ad-hoc for local use)
 # ---------------------------------------------------------------------------
 echo "🔏 Code signing (ad-hoc)..."
 codesign --deep --force --sign - \
@@ -92,13 +121,33 @@ echo "✅ Code signed"
 echo ""
 
 # ---------------------------------------------------------------------------
-# 5. Verify
+# 6. Install to /Applications (if --install flag or local build)
+# ---------------------------------------------------------------------------
+if [ "$INSTALL" = true ]; then
+    echo "📲 Installing to /Applications..."
+    # Remove old version if present
+    if [ -d "/Applications/$APP_NAME.app" ]; then
+        rm -rf "/Applications/$APP_NAME.app"
+    fi
+    cp -R "$APP_BUNDLE" "/Applications/$APP_NAME.app"
+    echo "✅ Installed to /Applications/$APP_NAME.app"
+    echo ""
+fi
+
+# ---------------------------------------------------------------------------
+# 7. Done
 # ---------------------------------------------------------------------------
 echo "✅ Build complete!"
 echo ""
 echo "   App:  $APP_BUNDLE"
 echo "   Size: $(du -sh "$APP_BUNDLE" | cut -f1)"
 echo ""
-echo "   Run:  open $APP_BUNDLE"
-echo "   DMG:  ./scripts/build-dmg.sh"
+if [ "$INSTALL" = false ]; then
+    echo "   Run:     open $APP_BUNDLE"
+    echo "   Install: ./scripts/build-app.sh --install"
+    echo "   DMG:     ./scripts/build-dmg.sh"
+else
+    echo "   Run:     open /Applications/$APP_NAME.app"
+    echo "   DMG:     ./scripts/build-dmg.sh"
+fi
 echo ""
