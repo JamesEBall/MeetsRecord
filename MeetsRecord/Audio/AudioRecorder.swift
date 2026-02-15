@@ -1,4 +1,4 @@
-import ScreenCaptureKit
+@preconcurrency import ScreenCaptureKit
 import AVFAudio
 import CoreMedia
 import os

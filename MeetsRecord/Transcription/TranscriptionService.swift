@@ -1,5 +1,5 @@
 import Foundation
-import SwiftWhisper
+@preconcurrency import SwiftWhisper
 import os
 
 /// Transcribes audio files locally using SwiftWhisper (whisper.cpp).
