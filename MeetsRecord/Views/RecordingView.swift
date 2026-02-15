@@ -3,6 +3,7 @@ import SwiftUI
 struct RecordingView: View {
     @EnvironmentObject var state: RecordingState
     @EnvironmentObject var sessionManager: SessionManager
+    @EnvironmentObject var launchAtLogin: LaunchAtLoginManager
 
     var body: some View {
         VStack(spacing: 12) {
@@ -180,6 +181,9 @@ struct RecordingView: View {
             Button("Open Recordings Folder") {
                 sessionManager.openRecordingsFolder()
             }
+
+            Toggle("Open at Login", isOn: $launchAtLogin.isEnabled)
+                .toggleStyle(.switch)
 
             Divider()
 

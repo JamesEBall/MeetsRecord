@@ -121,7 +121,15 @@ echo "✅ Code signed"
 echo ""
 
 # ---------------------------------------------------------------------------
-# 6. Install to /Applications (if --install flag or local build)
+# 6. Clear quarantine flag (prevents Gatekeeper "malware" warning on local builds)
+# ---------------------------------------------------------------------------
+echo "🔓 Clearing quarantine flag..."
+xattr -cr "$APP_BUNDLE" 2>/dev/null || true
+echo "✅ Quarantine cleared"
+echo ""
+
+# ---------------------------------------------------------------------------
+# 7. Install to /Applications (if --install flag or local build)
 # ---------------------------------------------------------------------------
 if [ "$INSTALL" = true ]; then
     echo "📲 Installing to /Applications..."
@@ -130,12 +138,14 @@ if [ "$INSTALL" = true ]; then
         rm -rf "/Applications/$APP_NAME.app"
     fi
     cp -R "$APP_BUNDLE" "/Applications/$APP_NAME.app"
+    # Clear quarantine on installed copy too
+    xattr -cr "/Applications/$APP_NAME.app" 2>/dev/null || true
     echo "✅ Installed to /Applications/$APP_NAME.app"
     echo ""
 fi
 
 # ---------------------------------------------------------------------------
-# 7. Done
+# 8. Done
 # ---------------------------------------------------------------------------
 echo "✅ Build complete!"
 echo ""

@@ -4,12 +4,14 @@ import SwiftUI
 struct MeetsRecordApp: App {
     @StateObject private var recordingState = RecordingState()
     @StateObject private var sessionManager = SessionManager()
+    @StateObject private var launchAtLogin = LaunchAtLoginManager()
 
     var body: some Scene {
         MenuBarExtra {
             RecordingView()
                 .environmentObject(recordingState)
                 .environmentObject(sessionManager)
+                .environmentObject(launchAtLogin)
         } label: {
             Label {
                 Text("MeetsRecord")
