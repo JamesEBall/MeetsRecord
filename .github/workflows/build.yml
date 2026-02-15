@@ -3,9 +3,9 @@ name: Build & Release
 on:
   push:
     branches: [main]
+    tags: ["v*"]
   pull_request:
     branches: [main]
-  # Allow manual trigger
   workflow_dispatch:
 
 jobs:
@@ -17,10 +17,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Swift
-        uses: swift-actions/setup-swift@v2
-        with:
-          swift-version: "6.0"
+      - name: Show toolchain
+        run: |
+          swift --version
+          xcodebuild -version
 
       - name: Download Whisper model
         run: |
@@ -33,7 +33,9 @@ jobs:
         run: swift build -c release
 
       - name: Assemble .app bundle
-        run: ./scripts/build-app.sh
+        run: |
+          # build-app.sh detects the existing release build and skips re-building
+          ./scripts/build-app.sh
 
       - name: Create .dmg
         run: ./scripts/build-dmg.sh

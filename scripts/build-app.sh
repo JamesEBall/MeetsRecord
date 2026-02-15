@@ -36,10 +36,14 @@ echo ""
 # ---------------------------------------------------------------------------
 # 2. Build with SPM (release mode for performance)
 # ---------------------------------------------------------------------------
-echo "🔨 Building with Swift Package Manager (release)..."
-cd "$PROJECT_DIR"
-swift build -c release 2>&1 | tail -5
-echo "✅ Build complete"
+if [ -f "$BUILD_DIR/$APP_NAME" ]; then
+    echo "✅ Release binary already exists, skipping build"
+else
+    echo "🔨 Building with Swift Package Manager (release)..."
+    cd "$PROJECT_DIR"
+    swift build -c release 2>&1 | tail -5
+    echo "✅ Build complete"
+fi
 echo ""
 
 # ---------------------------------------------------------------------------
