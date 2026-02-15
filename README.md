@@ -11,39 +11,56 @@ A macOS menu bar app that records meeting audio (system output + microphone), au
 - **Local transcription** — uses whisper.cpp (via SwiftWhisper) for offline, private transcription
 - **Session management** — each recording saved in a timestamped folder with audio + transcript
 
+## Install
+
+Download `MeetsRecord.dmg` from [Releases](https://github.com/JamesEBall/MeetsRecord/releases), open it, and drag **MeetsRecord** into your **Applications** folder.
+
+On first launch, macOS will prompt for:
+- **Screen Recording** permission (needed to capture system audio)
+- **Microphone** permission
+
 ## Requirements
 
-- **macOS 15.0+** (Sequoia) — required for ScreenCaptureKit's `captureMicrophone` API
+- **macOS 15.0+** (Sequoia)
 - **Apple Silicon or Intel Mac** (Apple Silicon recommended for faster transcription)
-- **Screen Recording permission** — required to capture system audio
-- **Microphone permission** — required to capture your voice
 
-## Setup
+## Build from source
 
-### 1. Clone and open
+### Quick build (recommended)
 
 ```bash
 git clone https://github.com/JamesEBall/MeetsRecord.git
 cd MeetsRecord
-open Package.swift  # Opens in Xcode
+make dmg
 ```
 
-### 2. Download Whisper model
+This will:
+1. Download the Whisper model (~142 MB) if not present
+2. Build in release mode via Swift Package Manager
+3. Assemble `MeetsRecord.app`
+4. Package into `MeetsRecord.dmg` with drag-to-Applications
 
-Download the `ggml-base.en.bin` model (~142 MB) and place it in `MeetsRecord/Resources/`:
+The `.dmg` will be at `build/MeetsRecord.dmg`.
+
+### Individual steps
 
 ```bash
-curl -L -o MeetsRecord/Resources/ggml-base.en.bin \
-  https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin
+# Build just the .app bundle
+make app
+
+# Run the app
+make run
+
+# Build the .dmg installer
+make dmg
+
+# Clean everything
+make clean
 ```
 
-### 3. Build and run
+### Xcode
 
-Open in Xcode, select the `MeetsRecord` scheme, and run. The app appears in the menu bar.
-
-On first run, macOS will prompt for:
-- **Screen Recording** permission (needed to capture system audio)
-- **Microphone** permission
+You can also open `Package.swift` in Xcode, select the `MeetsRecord` scheme, and run directly.
 
 ## How it works
 
@@ -100,7 +117,10 @@ MeetsRecord/
     SessionManager.swift         — Session lifecycle + file management
     PermissionManager.swift      — Permission checks
   Resources/
-    ggml-base.en.bin             — Whisper model (not in git)
+    ggml-base.en.bin             — Whisper model (not in git, auto-downloaded)
+scripts/
+  build-app.sh                   — Builds .app bundle
+  build-dmg.sh                   — Packages .dmg installer
 ```
 
 ## License

@@ -1,0 +1,77 @@
+name: Build & Release
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  # Allow manual trigger
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build MeetsRecord.app
+    runs-on: macos-15
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Swift
+        uses: swift-actions/setup-swift@v2
+        with:
+          swift-version: "6.0"
+
+      - name: Download Whisper model
+        run: |
+          mkdir -p MeetsRecord/Resources
+          curl -L --progress-bar \
+            -o MeetsRecord/Resources/ggml-base.en.bin \
+            "https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-base.en.bin"
+
+      - name: Build (release)
+        run: swift build -c release
+
+      - name: Assemble .app bundle
+        run: ./scripts/build-app.sh
+
+      - name: Create .dmg
+        run: ./scripts/build-dmg.sh
+
+      - name: Upload .app artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeetsRecord.app
+          path: build/MeetsRecord.app
+
+      - name: Upload .dmg artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MeetsRecord.dmg
+          path: build/MeetsRecord.dmg
+
+  # -----------------------------------------------------------------------
+  # Release job — only runs on tagged pushes (e.g. v1.0.0)
+  # -----------------------------------------------------------------------
+  release:
+    name: Create GitHub Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download .dmg artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: MeetsRecord.dmg
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: MeetsRecord.dmg
+          generate_release_notes: true
+          draft: false
+          prerelease: false
